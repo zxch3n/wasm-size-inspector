@@ -1,0 +1,40 @@
+[package]
+name = "twiggy-wasm-api"
+version = "0.7.0"
+authors = []
+license = "Apache-2.0/MIT"
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde-wasm-bindgen = "0.4"
+
+[dependencies.twiggy-ir]
+version = "=0.7.0"
+
+[dependencies.twiggy-analyze]
+default-features = false
+version = "=0.7.0"
+features = ["emit_json"]
+
+[dependencies.twiggy-opt]
+default-features = false
+features = ["wasm"]
+version = "=0.7.0"
+
+[dependencies.twiggy-parser]
+default-features = false
+version = "=0.7.0"
+
+[dependencies.twiggy-traits]
+version = "=0.7.0"
+
+[dependencies.wasm-bindgen]
+version = "0.2.80"
+
+[features]
+default = ["emit_json"]
+emit_json = ["twiggy-traits/emit_json"]
