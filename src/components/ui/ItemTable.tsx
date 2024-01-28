@@ -18,13 +18,29 @@ export interface Props {
 }
 
 export const ItemTable = ({ items, totalSize }: Props) => {
+  const collapsedSetRef = React.useRef<Set<bigint>>(new Set());
+  const [updateTrigger, setUpdateTrigger] = useState(0);
   const [sortBy, setSortBy] = useState<SortBy>("retainSize");
   const sortedItems = sort(items, sortBy);
   const flat = (item: ItemModel, depth: number = 0) => {
     const rows = [
-      <Row key={item.id} item={item} totalSize={totalSize} depth={depth} />,
+      <Row
+        onClick={() => {
+          if (item.children.length > 0) {
+            collapsedSetRef.current.has(item.id)
+              ? collapsedSetRef.current.delete(item.id)
+              : collapsedSetRef.current.add(item.id);
+            console.log("onclick");
+            setUpdateTrigger((v) => v + 1);
+          }
+        }}
+        key={item.id}
+        item={item}
+        totalSize={totalSize}
+        depth={depth}
+      />,
     ];
-    if (!item.collapse) {
+    if (!collapsedSetRef.current.has(item.id)) {
       const children = sort(item.children, sortBy);
       for (const c of children) {
         const arr = flat(c, depth + 1);
@@ -88,10 +104,12 @@ function Row({
   item,
   totalSize,
   depth,
+  onClick,
 }: {
   item: ItemModel;
   totalSize: number;
   depth: number;
+  onClick: () => void;
 }) {
   const foldState = extractFoldState(item);
   let icon: React.ReactNode;
@@ -111,7 +129,7 @@ function Row({
       </TableCell>
       <TableCell>{item.retainSize}</TableCell>
       <TableCell>{((item.retainSize / totalSize) * 100).toFixed(2)}%</TableCell>
-      <TableCell>
+      <TableCell onClick={onClick} className="cursor-pointer">
         {icon}
         <span>{item.name}</span>
       </TableCell>

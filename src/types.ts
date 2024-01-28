@@ -4,8 +4,8 @@
 export interface ItemModel {
   id: bigint;
   name: string;
-  collapse: boolean;
   children: ItemModel[];
+  parent: ItemModel | undefined;
   shallowSize: number;
   retainSize: number;
 }

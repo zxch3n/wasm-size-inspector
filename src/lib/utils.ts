@@ -13,8 +13,8 @@ export function itemWasmToItemModels(items: ItemWasm[]): ItemModel[] {
     map.set(item.id, {
       id: item.id,
       name: item.name,
-      collapse: false,
       children: [],
+      parent: undefined,
       shallowSize: item.shallowSize,
       retainSize: item.retainSize,
     });
@@ -22,9 +22,12 @@ export function itemWasmToItemModels(items: ItemWasm[]): ItemModel[] {
 
   for (const item of items) {
     for (const child of item.children) {
-      map.get(item.id)!.children.push(map.get(child)!);
+      const c = map.get(child)!;
+      const ansItem = map.get(item.id)!;
+      ansItem.children.push(c);
+      c.parent = ansItem;
     }
   }
 
-  return Array.from(map.values());
+  return Array.from(map.values()).filter((item) => item.parent === undefined);
 }
