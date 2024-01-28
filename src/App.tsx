@@ -1,6 +1,6 @@
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import logo from "/icon.svg";
 import { Items } from "twiggy-wasm-api";
 import wasm from "./assets/sqlite3.wasm?raw-binary";
 
@@ -22,7 +22,7 @@ function App() {
     <>
       <div className="bg-black">
         <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
+          <img src={logo} className="logo" alt="Vite logo" />
         </a>
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
