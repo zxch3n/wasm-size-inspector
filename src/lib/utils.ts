@@ -17,6 +17,7 @@ export function itemWasmToItemModels(items: ItemWasm[]): ItemModel[] {
       parent: undefined,
       shallowSize: item.shallowSize,
       retainSize: item.retainSize,
+      kind: item.kind,
     });
   }
 

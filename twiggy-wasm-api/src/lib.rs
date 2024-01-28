@@ -21,6 +21,7 @@ struct Item {
     shallowSize: u32,
     retainSize: u32,
     children: Vec<u64>,
+    kind: String,
 }
 
 #[wasm_bindgen]
@@ -79,6 +80,12 @@ impl Items {
                 shallowSize: item.size(),
                 retainSize: retain,
                 children,
+                kind: match item.kind() {
+                    ir::ItemKind::Code(..) => "code".to_owned(),
+                    ir::ItemKind::Data(..) => "data".to_owned(),
+                    ir::ItemKind::Debug(..) => "debug".to_owned(),
+                    ir::ItemKind::Misc(_) => "misc".to_owned(),
+                },
             })
         }
 
@@ -125,5 +132,6 @@ export interface ItemWasm {
   children: bigint[];
   shallowSize: number;
   retainSize: number;
+  kind: "code" | "data" | "debug" | "misc"
 }
 "#;

@@ -19,6 +19,7 @@ export const Default = Template.bind(null, {
       name: "level 0",
       retainSize: 100,
       shallowSize: 100,
+      kind: "code",
       children: [],
     },
     {
@@ -26,18 +27,21 @@ export const Default = Template.bind(null, {
       name: "level 0 Debug",
       retainSize: 200,
       shallowSize: 23,
+      kind: "code",
       children: [
         {
           id: 12n,
           name: "function",
           retainSize: 200,
           shallowSize: 111,
+          kind: "code",
           children: [
             {
               id: 14n,
               name: "function",
               retainSize: 200,
               shallowSize: 111,
+              kind: "code",
               children: [],
             },
           ],
@@ -47,6 +51,7 @@ export const Default = Template.bind(null, {
           name: "functiona asdfadsfdsa",
           retainSize: 20,
           shallowSize: 31,
+          kind: "code",
           children: [],
         },
       ],
@@ -71,11 +76,7 @@ export const RealWasmTable = () => {
     const items = Items.parse(raw);
     const itemModels = itemWasmToItemModels(items.items());
     items.free();
-    const totalSize = itemModels.reduce(
-      (acc, item) => acc + item.retainSize,
-      0,
-    );
-    return [itemModels, totalSize];
+    return [itemModels, raw.length];
   }, []);
   return <ItemTable items={items} totalSize={totalSize} />;
 };

@@ -8,4 +8,5 @@ export interface ItemModel {
   parent?: ItemModel | undefined;
   shallowSize: number;
   retainSize: number;
+  kind: "misc" | "code" | "data" | "debug";
 }
