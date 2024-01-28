@@ -69,7 +69,7 @@ function base64ToUint8Array(base64: string): Uint8Array {
   return bytes;
 }
 
-export const SqliteTable = () => {
+export const RealWasmTable = () => {
   const [items, totalSize] = useMemo(() => {
     const raw = base64ToUint8Array(wasm);
     console.log(raw);
@@ -77,7 +77,7 @@ export const SqliteTable = () => {
     const itemModels = itemWasmToItemModels(items.items());
     items.free();
     const totalSize = itemModels.reduce(
-      (acc, item) => acc + item.shallowSize,
+      (acc, item) => acc + item.retainSize,
       0,
     );
     return [itemModels, totalSize];

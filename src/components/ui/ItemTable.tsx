@@ -30,7 +30,6 @@ export const ItemTable = ({ items, totalSize }: Props) => {
             collapsedSetRef.current.has(item.id)
               ? collapsedSetRef.current.delete(item.id)
               : collapsedSetRef.current.add(item.id);
-            console.log("onclick");
             setUpdateTrigger((v) => v + 1);
           }
         }}
@@ -54,7 +53,6 @@ export const ItemTable = ({ items, totalSize }: Props) => {
 
   const flatItem = (item: ItemModel) => flat(item, 0);
   const rows = sortedItems.flatMap(flatItem);
-  console.log(rows.length);
   return (
     <Table>
       <TableCaption>A list of your recent invoices.</TableCaption>
