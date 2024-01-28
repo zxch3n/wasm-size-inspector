@@ -1,10 +1,8 @@
-export { ItemWasm } from "twiggy-wasm-api";
-
 /**
  * ItemModel for UI
  */
 export interface ItemModel {
-  id: number;
+  id: bigint;
   name: string;
   collapse: boolean;
   children: ItemModel[];

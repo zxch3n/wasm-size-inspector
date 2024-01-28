@@ -2,9 +2,20 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import { Items, ItemWasm } from "twiggy-wasm-api";
+import wasm from "./assets/sqlite3.wasm?raw-binary";
+
+function base64ToUint8Array(base64: string): Uint8Array {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
 
 function App() {
-  Items.parse();
+  const items = Items.parse(base64ToUint8Array(wasm));
+  console.log(items.items());
   const [count, setCount] = useState(0);
 
   return (

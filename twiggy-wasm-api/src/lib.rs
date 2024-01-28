@@ -25,8 +25,25 @@ struct Item {
 
 #[wasm_bindgen]
 extern "C" {
-    #[wasm_bindgen(typescript_type = "ItemWasm")]
+    #[wasm_bindgen(typescript_type = "ItemWasm[]")]
     pub type IItems;
+}
+
+#[wasm_bindgen]
+extern "C" {
+    // Use `js_namespace` here to bind `console.log(..)` instead of just
+    // `log(..)`
+    #[wasm_bindgen(js_namespace = console)]
+    pub fn log(s: &str);
+    #[wasm_bindgen(js_namespace = console)]
+    pub fn error(s: &str);
+}
+
+#[macro_export]
+macro_rules! console_log {
+    // Note that this is using the `log` function imported above during
+    // `bare_bones`
+    ($($t:tt)*) => ($crate::log(&format_args!($($t)*).to_string()))
 }
 
 #[wasm_bindgen]
@@ -44,23 +61,33 @@ impl Items {
     }
 
     pub fn items(&mut self) -> IItems {
+        console_log!("items size {}", self.items.size());
         let mut option: opt::Top = Default::default();
         option.set_retained(true);
-        let _ = analyze::top(&mut self.items, &option).unwrap();
+        let _ = analyze::top(&mut self.items, &option).expect_throw("top err");
+        console_log!("Top analyze finished");
         let mut items: Vec<Item> = Vec::new();
         for item in self.items.iter() {
             let retain = self.items.retained_size(item.id());
-            let children = self.items.dominator_tree().get(&item.id()).unwrap();
+            let children: Vec<u64> = self
+                .items
+                .dominator_tree()
+                .get(&item.id())
+                .map(|x| x.iter().map(|x| x.serializable()).collect())
+                .unwrap_or_default();
             items.push(Item {
                 id: item.id().serializable(),
                 name: item.name().to_owned(),
                 shallowSize: item.size(),
                 retainSize: retain,
-                children: children.iter().map(|x| x.serializable()).collect(),
+                children,
             })
         }
 
-        let v: JsValue = serde_wasm_bindgen::to_value(&items).unwrap_throw();
+        console_log!("items processe finished");
+        let ser =
+            serde_wasm_bindgen::Serializer::default().serialize_large_number_types_as_bigints(true);
+        let v = items.serialize(&ser).expect_throw("serialize err");
         v.into()
     }
 

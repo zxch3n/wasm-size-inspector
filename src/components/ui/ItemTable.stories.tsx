@@ -1,5 +1,8 @@
 import { ItemTable, Props } from "./ItemTable";
-import { DataTableDemo } from "./TestTable";
+import { useMemo } from "react";
+import { Items } from "twiggy-wasm-api";
+import { itemWasmToItemModels } from "@/lib/utils";
+import wasm from "../..//assets/hello.wasm?raw-binary";
 
 export default {
   title: "Components/ItemTable",
@@ -12,7 +15,7 @@ const Template = (args: Props) => <ItemTable {...args} />;
 export const Default = Template.bind(null, {
   items: [
     {
-      id: 0,
+      id: 0n,
       collapse: false,
       name: "level 0",
       retainSize: 100,
@@ -20,21 +23,21 @@ export const Default = Template.bind(null, {
       children: [],
     },
     {
-      id: 1,
+      id: 1n,
       collapse: false,
       name: "level 0 Debug",
       retainSize: 200,
       shallowSize: 23,
       children: [
         {
-          id: 12,
+          id: 12n,
           collapse: false,
           name: "function",
           retainSize: 200,
           shallowSize: 111,
           children: [
             {
-              id: 14,
+              id: 14n,
               collapse: false,
               name: "function",
               retainSize: 200,
@@ -44,7 +47,7 @@ export const Default = Template.bind(null, {
           ],
         },
         {
-          id: 23,
+          id: 23n,
           collapse: false,
           name: "functiona asdfadsfdsa",
           retainSize: 20,
@@ -57,6 +60,27 @@ export const Default = Template.bind(null, {
   totalSize: 1000,
 } as Props);
 
-export const DataTable = () => {
-  return <DataTableDemo />;
+function base64ToUint8Array(base64: string): Uint8Array {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+
+export const SqliteTable = () => {
+  const [items, totalSize] = useMemo(() => {
+    const raw = base64ToUint8Array(wasm);
+    console.log(raw);
+    const items = Items.parse(raw);
+    const itemModels = itemWasmToItemModels(items.items());
+    items.free();
+    const totalSize = itemModels.reduce(
+      (acc, item) => acc + item.shallowSize,
+      0,
+    );
+    return [itemModels, totalSize];
+  }, []);
+  return <ItemTable items={items} totalSize={totalSize} />;
 };
