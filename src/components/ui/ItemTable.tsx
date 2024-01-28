@@ -61,11 +61,25 @@ export const ItemTable = ({ items, totalSize }: Props) => {
           <TableHead className="w-[80px]">Shallow Size </TableHead>
           <TableHead className="w-[80px]">Shallow Ratio </TableHead>
           <TableHead className="w-[120px]">
-            <Button onClick={() => setSortBy("retainSize")}>
+            <Button
+              onClick={() =>
+                setSortBy((r) => {
+                  if (r === "retainSize") {
+                    return "retainSizeAsc";
+                  } else {
+                    return "retainSize";
+                  }
+                })
+              }
+            >
               Retain Size
               <MaterialSymbolsKeyboardArrowDown
+                className="ml-1"
                 style={{
-                  color: sortBy === "retainSize" ? "#777" : "transparent",
+                  color: sortBy.startsWith("retainSize")
+                    ? "#777"
+                    : "transparent",
+                  transform: sortBy === "retainSizeAsc" ? "rotate(180deg)" : "",
                 }}
               />
             </Button>
@@ -144,10 +158,13 @@ function Row({
   );
 }
 
-type SortBy = "shallowSize" | "retainSize";
+type SortBy = "shallowSize" | "retainSize" | "retainSizeAsc";
 function sort(items: ItemModel[], sortBy: SortBy): ItemModel[] {
   const t = items.concat();
   t.sort((a, b) => {
+    if (sortBy === "retainSizeAsc") {
+      return a.retainSize - b.retainSize;
+    }
     return -a[sortBy] + b[sortBy];
   });
 
