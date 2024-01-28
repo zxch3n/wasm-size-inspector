@@ -20,7 +20,6 @@ import {
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -45,7 +44,7 @@ const data: Payment[] = [
     id: "m5gr84i9",
     amount: 316,
     status: "success",
-    email: "ken99@yahoo.com",
+    email: "ken@yahoo.com",
   },
   {
     id: "3u1reuv4",

@@ -14,7 +14,7 @@ export const Default = Template.bind(null, {
     {
       id: 0,
       collapse: false,
-      name: "function",
+      name: "level 0",
       retainSize: 100,
       shallowSize: 100,
       children: [],
@@ -22,7 +22,7 @@ export const Default = Template.bind(null, {
     {
       id: 1,
       collapse: false,
-      name: "Debug",
+      name: "level 0 Debug",
       retainSize: 200,
       shallowSize: 23,
       children: [
@@ -32,7 +32,16 @@ export const Default = Template.bind(null, {
           name: "function",
           retainSize: 200,
           shallowSize: 111,
-          children: [],
+          children: [
+            {
+              id: 14,
+              collapse: false,
+              name: "function",
+              retainSize: 200,
+              shallowSize: 111,
+              children: [],
+            },
+          ],
         },
         {
           id: 23,

@@ -3,7 +3,6 @@ import {
   Table,
   TableHeader,
   TableBody,
-  TableFooter,
   TableHead,
   TableRow,
   TableCell,
@@ -11,7 +10,7 @@ import {
 } from "./table";
 import { Button } from "./button";
 
-import { SVGProps, useState } from "react";
+import React, { SVGProps, useState } from "react";
 
 export interface Props {
   items: ItemModel[];
@@ -21,16 +20,24 @@ export interface Props {
 export const ItemTable = ({ items, totalSize }: Props) => {
   const [sortBy, setSortBy] = useState<SortBy>("retainSize");
   const sortedItems = sort(items, sortBy);
-  const rows = sortedItems.flatMap((item) => {
-    const rows = [<Row key={item.id} item={item} totalSize={totalSize} />];
+  const flat = (item: ItemModel, depth: number = 0) => {
+    const rows = [
+      <Row key={item.id} item={item} totalSize={totalSize} depth={depth} />,
+    ];
     if (!item.collapse) {
       const children = sort(item.children, sortBy);
       for (const c of children) {
-        rows.push(<Row key={c.id} item={c} totalSize={totalSize} />);
+        const arr = flat(c, depth + 1);
+        for (const c of arr) {
+          rows.push(c);
+        }
       }
     }
     return rows;
-  });
+  };
+
+  const flatItem = (item: ItemModel) => flat(item, 0);
+  const rows = sortedItems.flatMap(flatItem);
   console.log(rows.length);
   return (
     <Table>
@@ -67,7 +74,35 @@ export const ItemTable = ({ items, totalSize }: Props) => {
   );
 };
 
-function Row({ item, totalSize }: { item: ItemModel; totalSize: number }) {
+const extractFoldState = (item: ItemModel): "none" | "folded" | "expanded" => {
+  if (item.children.length === 0) {
+    return "none";
+  }
+  if (item.collapse) {
+    return "folded";
+  }
+  return "expanded";
+};
+
+function Row({
+  item,
+  totalSize,
+  depth,
+}: {
+  item: ItemModel;
+  totalSize: number;
+  depth: number;
+}) {
+  const foldState = extractFoldState(item);
+  let icon: React.ReactNode;
+  if (foldState === "none") {
+    icon = <span style={{ paddingLeft: depth * 24 }}>📄</span>;
+  } else if (foldState === "folded") {
+    icon = <span style={{ paddingLeft: depth * 24 }}>📁</span>;
+  } else {
+    icon = <span style={{ paddingLeft: depth * 24 }}>📂</span>;
+  }
+
   return (
     <TableRow>
       <TableCell className="font-medium">{item.shallowSize}</TableCell>
@@ -76,7 +111,10 @@ function Row({ item, totalSize }: { item: ItemModel; totalSize: number }) {
       </TableCell>
       <TableCell>{item.retainSize}</TableCell>
       <TableCell>{((item.retainSize / totalSize) * 100).toFixed(2)}%</TableCell>
-      <TableCell className="text-right">{item.name}</TableCell>
+      <TableCell>
+        {icon}
+        <span>{item.name}</span>
+      </TableCell>
     </TableRow>
   );
 }
