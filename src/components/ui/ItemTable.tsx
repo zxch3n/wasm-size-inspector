@@ -55,13 +55,14 @@ export const ItemTable = ({ items, totalSize }: Props) => {
   const flatItem = (item: ItemModel) => flat(item, 0);
   const rows = sortedItems.flatMap(flatItem);
   return (
-    <Table className="max-w-[1100px]">
+    <Table className="max-w-[1100px] text-gray-800">
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[80px]">Shallow Size </TableHead>
-          <TableHead className="w-[80px]">Shallow Ratio </TableHead>
-          <TableHead className="w-[120px]">
-            <Button
+          <TableHead className="w-[80px]">Shallow Bytes</TableHead>
+          <TableHead className="w-[80px]">Shallow Ratio</TableHead>
+          <TableHead className="w-[80px]">
+            <div
+              className="cursor-pointer select-none text-sm hover:text-gray-400"
               onClick={() =>
                 setSortBy((r) => {
                   if (r === "retainSize") {
@@ -72,7 +73,7 @@ export const ItemTable = ({ items, totalSize }: Props) => {
                 })
               }
             >
-              Retain Size
+              Retained Bytes
               <MaterialSymbolsKeyboardArrowDown
                 className="ml-1"
                 style={{
@@ -82,9 +83,9 @@ export const ItemTable = ({ items, totalSize }: Props) => {
                   transform: sortBy === "retainSizeAsc" ? "rotate(180deg)" : "",
                 }}
               />
-            </Button>
+            </div>
           </TableHead>
-          <TableHead className="w-[80px]">Retain Ratio</TableHead>
+          <TableHead className="w-[80px]">Retained Ratio</TableHead>
           <TableHead>Name</TableHead>
         </TableRow>
       </TableHeader>
