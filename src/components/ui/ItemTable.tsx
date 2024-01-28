@@ -227,7 +227,7 @@ function getInnerIcon(kind: ItemModel["kind"]) {
     case "code":
       return [<PhCodeLight className="text-white" />, "#66f"];
     case "data":
-      return [<MaterialSymbolsDatabase className="text-white" />, "#111"];
+      return [<MaterialSymbolsDatabase className="text-white" />, "#444"];
     case "debug":
       return [<CarbonDebug />, "#f55"];
   }
