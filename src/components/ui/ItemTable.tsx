@@ -59,16 +59,7 @@ export const ItemTable = ({ items, totalSize }: Props) => {
       <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[120px]">
-            <Button onClick={() => setSortBy("shallowSize")}>
-              Shallow Size{" "}
-              <MaterialSymbolsKeyboardArrowDown
-                style={{
-                  color: sortBy === "shallowSize" ? "#777" : "transparent",
-                }}
-              />
-            </Button>
-          </TableHead>
+          <TableHead className="w-[120px]">Shallow Size </TableHead>
           <TableHead className="w-[80px]">Shallow Ratio </TableHead>
           <TableHead className="w-[120px]">
             <Button onClick={() => setSortBy("retainSize")}>
