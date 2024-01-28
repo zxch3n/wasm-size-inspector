@@ -56,10 +56,9 @@ export const ItemTable = ({ items, totalSize }: Props) => {
   const rows = sortedItems.flatMap(flatItem);
   return (
     <Table className="max-w-[1100px]">
-      <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[120px]">Shallow Size </TableHead>
+          <TableHead className="w-[80px]">Shallow Size </TableHead>
           <TableHead className="w-[80px]">Shallow Ratio </TableHead>
           <TableHead className="w-[120px]">
             <Button onClick={() => setSortBy("retainSize")}>
