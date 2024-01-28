@@ -5,7 +5,7 @@ export interface ItemModel {
   id: bigint;
   name: string;
   children: ItemModel[];
-  parent: ItemModel | undefined;
+  parent?: ItemModel | undefined;
   shallowSize: number;
   retainSize: number;
 }

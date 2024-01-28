@@ -61,11 +61,9 @@ impl Items {
     }
 
     pub fn items(&mut self) -> IItems {
-        console_log!("items size {}", self.items.size());
         let mut option: opt::Top = Default::default();
         option.set_retained(true);
         let _ = analyze::top(&mut self.items, &option).expect_throw("top err");
-        console_log!("Top analyze finished");
         let mut items: Vec<Item> = Vec::new();
         for item in self.items.iter() {
             let retain = self.items.retained_size(item.id());
@@ -84,7 +82,6 @@ impl Items {
             })
         }
 
-        console_log!("items processe finished");
         let ser =
             serde_wasm_bindgen::Serializer::default().serialize_large_number_types_as_bigints(true);
         let v = items.serialize(&ser).expect_throw("serialize err");

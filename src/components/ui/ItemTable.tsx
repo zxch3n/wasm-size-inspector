@@ -6,9 +6,7 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  TableCaption,
 } from "./table";
-import { Button } from "./button";
 
 import React, { SVGProps, useState } from "react";
 
@@ -19,7 +17,7 @@ export interface Props {
 
 export const ItemTable = ({ items, totalSize }: Props) => {
   const collapsedSetRef = React.useRef<Set<bigint>>(new Set());
-  const [updateTrigger, setUpdateTrigger] = useState(0);
+  const setUpdateTrigger = useState(0)[1];
   const [sortBy, setSortBy] = useState<SortBy>("retainSize");
   const sortedItems = sort(items, sortBy);
   const flat = (item: ItemModel, depth: number = 0) => {
@@ -55,7 +53,7 @@ export const ItemTable = ({ items, totalSize }: Props) => {
   const flatItem = (item: ItemModel) => flat(item, 0);
   const rows = sortedItems.flatMap(flatItem);
   return (
-    <Table className="max-w-[1100px] text-gray-800">
+    <Table className="max-w-[1100px] text-gray-700">
       <TableHeader>
         <TableRow>
           <TableHead className="w-[80px]">Shallow Bytes</TableHead>

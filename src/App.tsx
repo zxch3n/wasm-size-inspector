@@ -1,7 +1,7 @@
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
-import { Items, ItemWasm } from "twiggy-wasm-api";
+import { Items } from "twiggy-wasm-api";
 import wasm from "./assets/sqlite3.wasm?raw-binary";
 
 function base64ToUint8Array(base64: string): Uint8Array {
