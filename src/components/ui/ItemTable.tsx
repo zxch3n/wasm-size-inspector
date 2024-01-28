@@ -10,6 +10,8 @@ import {
 
 import React, { SVGProps, useState } from "react";
 
+const INDENT_WIDTH = 32;
+
 export interface Props {
   items: ItemModel[];
   totalSize: number;
@@ -121,16 +123,27 @@ function Row({
   const foldState = extractFoldState(item, collapsedSet.current);
   let icon: React.ReactNode;
   if (foldState === "none") {
-    icon = <span className="mr-5" style={{ paddingLeft: depth * 24 }}></span>;
+    icon = (
+      <span
+        className="mr-5"
+        style={{ paddingLeft: depth * INDENT_WIDTH }}
+      ></span>
+    );
   } else if (foldState === "folded") {
     icon = (
-      <span className="mr-1 text-gray-400" style={{ paddingLeft: depth * 24 }}>
+      <span
+        className="mr-1 text-gray-400"
+        style={{ paddingLeft: depth * INDENT_WIDTH }}
+      >
         <MaterialSymbolsKeyboardArrowDown className="-rotate-90" />
       </span>
     );
   } else {
     icon = (
-      <span className="mr-1 text-gray-400" style={{ paddingLeft: depth * 24 }}>
+      <span
+        className="mr-1 text-gray-400"
+        style={{ paddingLeft: depth * INDENT_WIDTH }}
+      >
         <MaterialSymbolsKeyboardArrowDown />
       </span>
     );
