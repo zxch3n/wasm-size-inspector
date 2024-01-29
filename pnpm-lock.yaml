@@ -58,9 +58,15 @@ devDependencies:
   '@storybook/addon-onboarding':
     specifier: ^1.0.11
     version: 1.0.11(react-dom@18.2.0)(react@18.2.0)
+  '@storybook/addon-themes':
+    specifier: ^7.6.10
+    version: 7.6.10
   '@storybook/blocks':
     specifier: ^7.6.10
     version: 7.6.10(@types/react-dom@18.2.17)(@types/react@18.2.43)(react-dom@18.2.0)(react@18.2.0)
+  '@storybook/manager-api':
+    specifier: ^7.6.10
+    version: 7.6.10(react-dom@18.2.0)(react@18.2.0)
   '@storybook/react':
     specifier: ^7.6.10
     version: 7.6.10(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)
@@ -70,6 +76,9 @@ devDependencies:
   '@storybook/test':
     specifier: ^7.6.10
     version: 7.6.10
+  '@storybook/theming':
+    specifier: ^7.6.10
+    version: 7.6.10(react-dom@18.2.0)(react@18.2.0)
   '@types/node':
     specifier: ^20.11.7
     version: 20.11.7
@@ -3163,6 +3172,12 @@ packages:
     resolution: {integrity: sha512-RVJrEoPArhI6zAIMNl1Gz0zrj84BTfEWYYz0yDWOTVgvN411ugsoIk1hw0671MOneXJ2RcQ9MFIeV/v6AVDQYg==}
     dependencies:
       '@storybook/global': 5.0.0
+      ts-dedent: 2.2.0
+    dev: true
+
+  /@storybook/addon-themes@7.6.10:
+    resolution: {integrity: sha512-fsWr9FOVMJoD9bsXf1B7uHRajWx2Lruhi3VYGt/AZG6a/g38ja31+lWynpESOGxv4hOCyoNIAdC5JZFbMg7mOA==}
+    dependencies:
       ts-dedent: 2.2.0
     dev: true
 

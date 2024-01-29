@@ -55,7 +55,7 @@ export const ItemTable = ({ items, totalSize }: Props) => {
   const flatItem = (item: ItemModel) => flat(item, 0);
   const rows = sortedItems.flatMap(flatItem);
   return (
-    <Table className="max-w-[1100px] text-gray-700">
+    <Table className="max-w-[1100px] text-gray-700 dark:text-gray-200">
       <TableHeader>
         <TableRow>
           <TableHead className="w-[80px]">Shallow Bytes</TableHead>
