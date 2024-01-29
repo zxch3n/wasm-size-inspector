@@ -8,7 +8,9 @@ import {
   TableCell,
 } from "./table";
 
-import React, { SVGProps, useState } from "react";
+import React, { SVGProps, useMemo, useState } from "react";
+import { itemWasmToItemModels } from "@/lib/utils";
+import { Items } from "twiggy-wasm-api";
 
 const INDENT_WIDTH = 32;
 
@@ -95,6 +97,16 @@ export const ItemTable = ({ items, totalSize }: Props) => {
   );
 };
 
+export const WasmTable = ({ wasm }: { wasm: Uint8Array }) => {
+  const [items, totalSize] = useMemo(() => {
+    const items = Items.parse(wasm);
+    const itemModels = itemWasmToItemModels(items.items());
+    items.free();
+    return [itemModels, wasm.length];
+  }, [wasm]);
+  return <ItemTable items={items} totalSize={totalSize} />;
+};
+
 const extractFoldState = (
   item: ItemModel,
   collapsedSet: Set<bigint>,
@@ -165,7 +177,7 @@ function Row({
       </TableCell>
       <TableCell
         onClick={onClick}
-        className="cursor-pointer select-none whitespace-nowrap py-1"
+        className="cursor-pointer whitespace-nowrap py-1"
       >
         {icon}
         <span>{item.name}</span>
@@ -227,7 +239,7 @@ function getInnerIcon(kind: ItemModel["kind"]) {
     case "code":
       return [<PhCodeLight className="text-white" />, "#66f"];
     case "data":
-      return [<MaterialSymbolsDatabase className="text-white" />, "#444"];
+      return [<MaterialSymbolsDatabase className="text-white" />, "#454545"];
     case "debug":
       return [<CarbonDebug />, "#f55"];
   }

@@ -1,8 +1,8 @@
-import { ItemTable, Props } from "./ItemTable";
+import { ItemTable, Props, WasmTable } from "./ItemTable";
 import { useMemo } from "react";
 import { Items } from "twiggy-wasm-api";
 import { itemWasmToItemModels } from "@/lib/utils";
-import wasm from "../..//assets/hello.wasm?raw-binary";
+import helloWasm from "../..//assets/hello.wasm?raw-binary";
 import loroWasm from "../..//assets/loro.wasm?raw-binary";
 
 export default {
@@ -71,23 +71,17 @@ function base64ToUint8Array(base64: string): Uint8Array {
 }
 
 export const HelloWasmTable = () => {
-  const [items, totalSize] = useMemo(() => {
-    const raw = base64ToUint8Array(wasm);
-    const items = Items.parse(raw);
-    const itemModels = itemWasmToItemModels(items.items());
-    items.free();
-    return [itemModels, raw.length];
+  const raw = useMemo(() => {
+    const raw = base64ToUint8Array(helloWasm);
+    return raw;
   }, []);
-  return <ItemTable items={items} totalSize={totalSize} />;
+  return <WasmTable wasm={raw} />;
 };
 
 export const LoroWasmTable = () => {
-  const [items, totalSize] = useMemo(() => {
+  const raw = useMemo(() => {
     const raw = base64ToUint8Array(loroWasm);
-    const items = Items.parse(raw);
-    const itemModels = itemWasmToItemModels(items.items());
-    items.free();
-    return [itemModels, raw.length];
+    return raw;
   }, []);
-  return <ItemTable items={items} totalSize={totalSize} />;
+  return <WasmTable wasm={raw} />;
 };
