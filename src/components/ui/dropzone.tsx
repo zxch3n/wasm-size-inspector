@@ -50,11 +50,10 @@ export function Dropzone({ onRead }: { onRead?: (file: WasmFile) => void }) {
   return (
     <div
       {...getRootProps()}
-      className="flex h-[130px] w-[400px] cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 bg-gray-500/[0.1] text-gray-500 dark:text-gray-500"
+      className="flex h-[130px] w-[400px] cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 bg-gray-500/[0.1] text-gray-500 hover:bg-gray-500/[0.2] dark:text-gray-500"
     >
       <input {...getInputProps()} />
-      <p>Drop WASM file here</p>
-      <p>or click to select</p>
+      <p>Drop your WASM file here!</p>
     </div>
   );
 }
