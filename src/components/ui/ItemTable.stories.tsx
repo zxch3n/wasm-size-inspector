@@ -1,7 +1,6 @@
 import { ItemTable, Props, WasmTable } from "./ItemTable";
 import { useMemo } from "react";
-import { Items } from "twiggy-wasm-api";
-import { itemWasmToItemModels } from "@/lib/utils";
+
 import helloWasm from "../..//assets/hello.wasm?raw-binary";
 import loroWasm from "../..//assets/loro.wasm?raw-binary";
 
