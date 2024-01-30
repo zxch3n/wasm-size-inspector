@@ -1,8 +1,9 @@
 import { ItemTable, Props, WasmTable } from "./item-table";
 import { useMemo } from "react";
 
-import helloWasm from "../..//assets/hello.wasm?raw-binary";
-import loroWasm from "../..//assets/loro.wasm?raw-binary";
+import helloWasm from "../../assets/hello.wasm?raw-binary";
+import loroWasm from "../../assets/loro.wasm?raw-binary";
+import { base64ToUint8Array } from "@/lib/utils";
 
 export default {
   title: "Components/ItemTable",
@@ -59,15 +60,6 @@ export const Default = Template.bind(null, {
   ],
   totalSize: 1000,
 } as Props);
-
-function base64ToUint8Array(base64: string): Uint8Array {
-  const binaryString = atob(base64);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-}
 
 export const HelloWasmTable = () => {
   const raw = useMemo(() => {

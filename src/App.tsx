@@ -5,11 +5,17 @@ import { Button } from "@/components/ui/button";
 import { WasmFileInfo } from "@/components/ui/wasm-file-info";
 import { WasmTable } from "./components/ui/item-table";
 import { WasmFile } from "./types";
+import { base64ToUint8Array } from "./lib/utils";
+import helloWasm from "./assets/hello.wasm?raw-binary";
 
+const DefaultBinary = base64ToUint8Array(helloWasm);
 function App() {
-  const [importedWasm, setImportedWasm] = useState<WasmFile | undefined>(
-    undefined,
-  );
+  const [importedWasm, setImportedWasm] = useState<WasmFile>({
+    name: "Example Hello World.wasm",
+    binary: DefaultBinary,
+    importedTime: Date.now(),
+    lastModified: Date.now(),
+  });
   const [waitForImporting, setWaitForImporting] = useState(true);
   return (
     <div className="dark min-h-[100vh] bg-gray-900 text-gray-200">
