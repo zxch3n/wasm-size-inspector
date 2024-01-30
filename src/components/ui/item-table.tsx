@@ -30,11 +30,17 @@ export const ItemTable = ({
   onFilterDone,
 }: Props) => {
   const collapsedSetRef = React.useRef<Set<bigint>>(new Set());
-  const setUpdateTrigger = useState(0)[1];
+  const [updateTrigger, setUpdateTrigger] = useState(0);
   const [sortBy, setSortBy] = useState<SortBy>("retainSize");
   const sortedItems = useMemo(() => sort(items, sortBy), [items, sortBy]);
+  const sortByRef = React.useRef(sortBy);
+  sortByRef.current = sortBy;
   const onRowClick = useCallback(
     (item: ItemModel) => {
+      if (sortByRef.current.startsWith("shallow")) {
+        return;
+      }
+
       if (item.children.length > 0) {
         collapsedSetRef.current.has(item.id)
           ? collapsedSetRef.current.delete(item.id)
@@ -110,7 +116,8 @@ export const ItemTable = ({
       }
     }
     return rows;
-  }, [onRowClick, totalSize, sortBy, sortedItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onRowClick, totalSize, sortBy, sortedItems, updateTrigger]);
 
   rows = useMemo(() => {
     if (filter) {
