@@ -44,7 +44,9 @@ function App() {
             setImportedWasm(x);
           }}
         />
-        {importedWasm ? <WasmFileInfo wasm={importedWasm} /> : null}
+        {importedWasm ? (
+          <WasmFileInfo wasm={importedWasm} className="mt-3" />
+        ) : null}
         <div className="mt-2">
           {importedWasm ? <WasmTable wasm={importedWasm.binary} /> : null}
         </div>

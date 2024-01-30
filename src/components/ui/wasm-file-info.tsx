@@ -7,15 +7,17 @@ import {
 
 export function WasmFileInfo({
   wasm: { binary, importedTime, lastModified, name },
+  className,
 }: {
   wasm: WasmFile;
+  className?: string;
 }) {
   return (
-    <div>
+    <div className={className}>
       <HoverCard>
         <HoverCardTrigger>
           Imported:{" "}
-          <span className="inline-block cursor-default rounded px-2 py-2 text-white underline hover:bg-sky-500/10">
+          <span className="inline-block cursor-default rounded px-2 py-1 text-white underline hover:bg-sky-500/10">
             {name}
           </span>
         </HoverCardTrigger>
