@@ -19,6 +19,7 @@ export interface Props {
   totalSize: number;
 }
 
+type SortBy = "shallowSize" | "retainSize" | "retainSizeAsc" | "shallowSizeAsc";
 export const ItemTable = ({ items, totalSize }: Props) => {
   const collapsedSetRef = React.useRef<Set<bigint>>(new Set());
   const setUpdateTrigger = useState(0)[1];
@@ -35,22 +36,25 @@ export const ItemTable = ({ items, totalSize }: Props) => {
     },
     [setUpdateTrigger],
   );
-  const flat = (item: ItemModel, depth: number = 0, hide = false) => {
+  const flatRetainMode = (item: ItemModel, depth: number = 0, hide = false) => {
     const rows = [
-      <Row
-        hide={hide}
-        onClick={onRowClick}
-        key={item.id}
-        item={item}
-        totalSize={totalSize}
-        depth={depth}
-        foldState={extractFoldState(item, collapsedSetRef.current)}
-      />,
+      [
+        <Row
+          hide={hide}
+          onClick={onRowClick}
+          key={item.id}
+          item={item}
+          totalSize={totalSize}
+          depth={depth}
+          foldState={extractFoldState(item, collapsedSetRef.current)}
+        />,
+        item,
+      ] as [JSX.Element, ItemModel],
     ];
     const shouldChildrenHide = hide || collapsedSetRef.current.has(item.id);
     const children = sort(item.children, sortBy);
     for (const c of children) {
-      const arr = flat(c, depth + 1, shouldChildrenHide);
+      const arr = flatRetainMode(c, depth + 1, shouldChildrenHide);
       for (const c of arr) {
         rows.push(c);
       }
@@ -58,17 +62,76 @@ export const ItemTable = ({ items, totalSize }: Props) => {
     return rows;
   };
 
-  const flatItem = (item: ItemModel) => flat(item, 0);
-  const rows = sortedItems.flatMap(flatItem);
+  const flatShallowMode = (item: ItemModel) => {
+    const rows = [
+      [
+        <Row
+          hide={false}
+          onClick={onRowClick}
+          key={item.id}
+          item={item}
+          totalSize={totalSize}
+          depth={0}
+          foldState={"none"}
+        />,
+        item,
+      ] as [JSX.Element, ItemModel],
+    ];
+    for (const c of item.children) {
+      const arr = flatShallowMode(c);
+      for (const c of arr) {
+        rows.push(c);
+      }
+    }
+    return rows;
+  };
+  let rows: [JSX.Element, ItemModel][] = [];
+  if (sortBy === "retainSize" || sortBy === "retainSizeAsc") {
+    const flatItem = (item: ItemModel) => flatRetainMode(item, 0);
+    rows = sortedItems.flatMap(flatItem);
+  } else {
+    rows = sortedItems.flatMap(flatShallowMode);
+    rows.sort((a, b) => b[1].shallowSize - a[1].shallowSize);
+    if (sortBy === "shallowSizeAsc") {
+      rows.reverse();
+    }
+  }
   return (
     <Table className="text-gray-700 dark:text-gray-200">
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[80px]">Shallow Bytes</TableHead>
-          <TableHead className="w-[80px]">Shallow Ratio</TableHead>
-          <TableHead className="w-[80px]">
+          <TableHead className="w-[80px] px-0">
             <div
-              className="cursor-pointer select-none text-sm hover:text-gray-400"
+              className="flex cursor-pointer select-none flex-row items-center rounded-md px-3 hover:bg-gray-100/20 hover:text-gray-400"
+              onClick={useCallback(
+                () =>
+                  setSortBy((r) => {
+                    if (r === "shallowSize") {
+                      return "shallowSizeAsc";
+                    } else {
+                      return "shallowSize";
+                    }
+                  }),
+                [],
+              )}
+            >
+              Shallow Bytes
+              <MaterialSymbolsKeyboardArrowDown
+                className="text-xl"
+                style={{
+                  color: sortBy.startsWith("shallowSize")
+                    ? "#777"
+                    : "transparent",
+                  transform:
+                    sortBy === "shallowSizeAsc" ? "rotate(180deg)" : "",
+                }}
+              />
+            </div>
+          </TableHead>
+          <TableHead className="w-[80px]">Shallow Ratio</TableHead>
+          <TableHead className="w-[80px] px-0">
+            <div
+              className="flex cursor-pointer select-none flex-row items-center rounded-md px-3 hover:bg-gray-100/20 hover:text-gray-400"
               onClick={useCallback(
                 () =>
                   setSortBy((r) => {
@@ -83,7 +146,7 @@ export const ItemTable = ({ items, totalSize }: Props) => {
             >
               Retained Bytes
               <MaterialSymbolsKeyboardArrowDown
-                className="ml-1"
+                className="text-xl"
                 style={{
                   color: sortBy.startsWith("retainSize")
                     ? "#777"
@@ -98,7 +161,7 @@ export const ItemTable = ({ items, totalSize }: Props) => {
           <TableHead>Name</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>{rows}</TableBody>
+      <TableBody>{rows.map((x) => x[0])}</TableBody>
     </Table>
   );
 };
@@ -198,7 +261,6 @@ const Row = React.memo(
   },
 );
 
-type SortBy = "shallowSize" | "retainSize" | "retainSizeAsc";
 function sort(items: ItemModel[], sortBy: SortBy): ItemModel[] {
   const t = items.concat();
   t.sort((a, b) => {
