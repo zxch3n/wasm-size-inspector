@@ -1,7 +1,6 @@
 import { useState } from "react";
 import logo from "/icon.svg";
 import { Dropzone } from "@/components/ui/dropzone";
-import { Button } from "@/components/ui/button";
 import { WasmFileInfo } from "@/components/ui/wasm-file-info";
 import { WasmTable } from "./components/ui/item-table";
 import { WasmFile } from "./types";
@@ -16,7 +15,6 @@ function App() {
     importedTime: Date.now(),
     lastModified: Date.now(),
   });
-  const [waitForImporting, setWaitForImporting] = useState(true);
   return (
     <div className="dark min-h-[100vh] bg-gray-900 text-gray-200">
       <div
@@ -30,24 +28,11 @@ function App() {
       </div>
 
       <div className="m-4">
-        {!!importedWasm && (
-          <Button
-            size={"sm"}
-            className="mb-2 p-2"
-            onClick={() => setWaitForImporting((v) => !v)}
-          >
-            {waitForImporting ? "Hide Import" : "Import"}
-          </Button>
-        )}
-        {waitForImporting || !importedWasm ? (
-          <Dropzone
-            onRead={(x) => {
-              setImportedWasm(x);
-              setWaitForImporting(false);
-            }}
-          />
-        ) : undefined}
-
+        <Dropzone
+          onRead={(x) => {
+            setImportedWasm(x);
+          }}
+        />
         {importedWasm ? <WasmFileInfo wasm={importedWasm} /> : null}
         <div className="mt-2">
           {importedWasm ? <WasmTable wasm={importedWasm.binary} /> : null}

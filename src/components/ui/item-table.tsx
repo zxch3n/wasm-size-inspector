@@ -61,7 +61,7 @@ export const ItemTable = ({ items, totalSize }: Props) => {
   const flatItem = (item: ItemModel) => flat(item, 0);
   const rows = sortedItems.flatMap(flatItem);
   return (
-    <Table className="max-w-[1100px] text-gray-700 dark:text-gray-200">
+    <Table className="text-gray-700 dark:text-gray-200">
       <TableHeader>
         <TableRow>
           <TableHead className="w-[80px]">Shallow Bytes</TableHead>
@@ -187,7 +187,8 @@ const Row = React.memo(
           onClick={useCallback(() => {
             onClick(item);
           }, [item, onClick])}
-          className="cursor-pointer whitespace-nowrap py-1"
+          className="cursor-pointer whitespace-nowrap py-1 text-xs"
+          style={{ fontFamily: "monospace" }}
         >
           {icon}
           <span>{item.name}</span>
@@ -246,7 +247,7 @@ function KindIcon(props: { kind: ItemModel["kind"] }) {
 function getInnerIcon(kind: ItemModel["kind"]) {
   switch (kind) {
     case "misc":
-      return [<CodiconSymbolMisc className="text-white" />, "#89a"];
+      return [<PhShapesFill className="text-gray-700" />, "#aba"];
     case "code":
       return [<PhCodeLight className="text-white" />, "#66f"];
     case "data":
@@ -290,25 +291,6 @@ function CarbonDebug(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function CodiconSymbolMisc(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="1em"
-      height="1em"
-      viewBox="0 0 16 16"
-      {...props}
-    >
-      <path
-        fill="currentColor"
-        fillRule="evenodd"
-        d="M4 2h8v4c.341.035.677.112 1 .23V1H3v8.48l1-1.75zm2.14 8L5 8L4 9.75L3.29 11L1 15h8l-2.29-4zm-3.42 4l1.72-3L5 10l.56 1l1.72 3zm6.836-6.41a3.5 3.5 0 1 1 3.888 5.82a3.5 3.5 0 0 1-3.888-5.82m.555 4.989a2.5 2.5 0 1 0 2.778-4.157a2.5 2.5 0 0 0-2.778 4.157"
-        clipRule="evenodd"
-      ></path>
-    </svg>
-  );
-}
-
 function MaterialSymbolsDatabase(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -321,6 +303,23 @@ function MaterialSymbolsDatabase(props: SVGProps<SVGSVGElement>) {
       <path
         fill="currentColor"
         d="M12 11q3.75 0 6.375-1.175T21 7q0-1.65-2.625-2.825T12 3Q8.25 3 5.625 4.175T3 7q0 1.65 2.625 2.825T12 11m0 2.5q1.025 0 2.563-.213t2.962-.687q1.425-.475 2.45-1.237T21 9.5V12q0 1.1-1.025 1.863t-2.45 1.237q-1.425.475-2.962.688T12 16q-1.025 0-2.562-.213T6.475 15.1q-1.425-.475-2.45-1.237T3 12V9.5q0 1.1 1.025 1.863t2.45 1.237q1.425.475 2.963.688T12 13.5m0 5q1.025 0 2.563-.213t2.962-.687q1.425-.475 2.45-1.237T21 14.5V17q0 1.1-1.025 1.863t-2.45 1.237q-1.425.475-2.962.688T12 21q-1.025 0-2.562-.213T6.475 20.1q-1.425-.475-2.45-1.237T3 17v-2.5q0 1.1 1.025 1.863t2.45 1.237q1.425.475 2.963.688T12 18.5"
+      ></path>
+    </svg>
+  );
+}
+
+export function PhShapesFill(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 256 256"
+      {...props}
+    >
+      <path
+        fill="currentColor"
+        d="M111.59 181.47A8 8 0 0 1 104 192H24a8 8 0 0 1-7.59-10.53l40-120a8 8 0 0 1 15.18 0ZM208 76a52 52 0 1 0-52 52a52.06 52.06 0 0 0 52-52m16 68h-88a8 8 0 0 0-8 8v56a8 8 0 0 0 8 8h88a8 8 0 0 0 8-8v-56a8 8 0 0 0-8-8"
       ></path>
     </svg>
   );
