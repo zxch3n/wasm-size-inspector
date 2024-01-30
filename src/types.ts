@@ -10,3 +10,10 @@ export interface ItemModel {
   retainSize: number;
   kind: "misc" | "code" | "data" | "debug";
 }
+
+export interface WasmFile {
+  name: string;
+  binary: Uint8Array;
+  lastModified: number;
+  importedTime: number;
+}
