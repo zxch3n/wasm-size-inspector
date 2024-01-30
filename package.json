@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build-wasm": "cd twiggy-wasm-api && wasm-pack build --dev --target bundler --out-dir ./pkg",
+    "build-wasm": "cd twiggy-wasm-api && wasm-pack build --target bundler --out-dir ./pkg",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
