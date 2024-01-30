@@ -11,20 +11,28 @@ import {
 import React, { SVGProps, useCallback, useMemo, useState } from "react";
 import { itemWasmToItemModels } from "@/lib/utils";
 import { Items } from "twiggy-wasm-api";
+import { FilterInput } from "@/components/ui/filter";
 
 const INDENT_WIDTH = 32;
 
 export interface Props {
   items: ItemModel[];
   totalSize: number;
+  filter?: string;
+  onFilterDone?: (items: ItemModel[]) => void;
 }
 
 type SortBy = "shallowSize" | "retainSize" | "retainSizeAsc" | "shallowSizeAsc";
-export const ItemTable = ({ items, totalSize }: Props) => {
+export const ItemTable = ({
+  items,
+  totalSize,
+  filter,
+  onFilterDone,
+}: Props) => {
   const collapsedSetRef = React.useRef<Set<bigint>>(new Set());
   const setUpdateTrigger = useState(0)[1];
   const [sortBy, setSortBy] = useState<SortBy>("retainSize");
-  const sortedItems = sort(items, sortBy);
+  const sortedItems = useMemo(() => sort(items, sortBy), [items, sortBy]);
   const onRowClick = useCallback(
     (item: ItemModel) => {
       if (item.children.length > 0) {
@@ -36,66 +44,95 @@ export const ItemTable = ({ items, totalSize }: Props) => {
     },
     [setUpdateTrigger],
   );
-  const flatRetainMode = (item: ItemModel, depth: number = 0, hide = false) => {
-    const rows = [
-      [
-        <Row
-          hide={hide}
-          onClick={onRowClick}
-          key={item.id}
-          item={item}
-          totalSize={totalSize}
-          depth={depth}
-          foldState={extractFoldState(item, collapsedSetRef.current)}
-        />,
-        item,
-      ] as [JSX.Element, ItemModel],
-    ];
-    const shouldChildrenHide = hide || collapsedSetRef.current.has(item.id);
-    const children = sort(item.children, sortBy);
-    for (const c of children) {
-      const arr = flatRetainMode(c, depth + 1, shouldChildrenHide);
-      for (const c of arr) {
-        rows.push(c);
+  let rows = useMemo(() => {
+    const flatRetainMode = (
+      item: ItemModel,
+      depth: number = 0,
+      hide = false,
+    ) => {
+      const rows = [
+        [
+          <Row
+            hide={hide}
+            onClick={onRowClick}
+            key={item.id}
+            item={item}
+            totalSize={totalSize}
+            depth={depth}
+            foldState={extractFoldState(item, collapsedSetRef.current)}
+          />,
+          item,
+        ] as [JSX.Element, ItemModel],
+      ];
+      const shouldChildrenHide = hide || collapsedSetRef.current.has(item.id);
+      const children = sort(item.children, sortBy);
+      for (const c of children) {
+        const arr = flatRetainMode(c, depth + 1, shouldChildrenHide);
+        for (const c of arr) {
+          rows.push(c);
+        }
       }
-    }
-    return rows;
-  };
+      return rows;
+    };
 
-  const flatShallowMode = (item: ItemModel) => {
-    const rows = [
-      [
-        <Row
-          hide={false}
-          onClick={onRowClick}
-          key={item.id}
-          item={item}
-          totalSize={totalSize}
-          depth={0}
-          foldState={"none"}
-        />,
-        item,
-      ] as [JSX.Element, ItemModel],
-    ];
-    for (const c of item.children) {
-      const arr = flatShallowMode(c);
-      for (const c of arr) {
-        rows.push(c);
+    const flatShallowMode = (item: ItemModel) => {
+      const rows = [
+        [
+          <Row
+            hide={false}
+            onClick={onRowClick}
+            key={item.id}
+            item={item}
+            totalSize={totalSize}
+            depth={0}
+            foldState={"none"}
+          />,
+          item,
+        ] as [JSX.Element, ItemModel],
+      ];
+      for (const c of item.children) {
+        const arr = flatShallowMode(c);
+        for (const c of arr) {
+          rows.push(c);
+        }
+      }
+      return rows;
+    };
+    let rows: [JSX.Element, ItemModel][] = [];
+    if (sortBy === "retainSize" || sortBy === "retainSizeAsc") {
+      const flatItem = (item: ItemModel) => flatRetainMode(item, 0);
+      rows = sortedItems.flatMap(flatItem);
+    } else {
+      rows = sortedItems.flatMap(flatShallowMode);
+      rows.sort((a, b) => b[1].shallowSize - a[1].shallowSize);
+      if (sortBy === "shallowSizeAsc") {
+        rows.reverse();
       }
     }
     return rows;
-  };
-  let rows: [JSX.Element, ItemModel][] = [];
-  if (sortBy === "retainSize" || sortBy === "retainSizeAsc") {
-    const flatItem = (item: ItemModel) => flatRetainMode(item, 0);
-    rows = sortedItems.flatMap(flatItem);
-  } else {
-    rows = sortedItems.flatMap(flatShallowMode);
-    rows.sort((a, b) => b[1].shallowSize - a[1].shallowSize);
-    if (sortBy === "shallowSizeAsc") {
-      rows.reverse();
+  }, [onRowClick, totalSize, sortBy, sortedItems]);
+
+  rows = useMemo(() => {
+    if (filter) {
+      let result;
+      try {
+        const regex = new RegExp(filter, "i");
+        result = rows.filter((x) => {
+          const name = x[1].name;
+          return regex.test(name);
+        });
+      } catch (e) {
+        result = rows.filter((x) => {
+          const name = x[1].name;
+          return name.includes(filter);
+        });
+      }
+      onFilterDone?.(result.map((x) => x[1]));
+      return result;
     }
-  }
+    return rows;
+  }, [rows, filter, onFilterDone]);
+
   return (
     <Table className="text-gray-700 dark:text-gray-200">
       <TableHeader>
@@ -173,8 +210,117 @@ export const WasmTable = React.memo(({ wasm }: { wasm: Uint8Array }) => {
     items.free();
     return [itemModels, wasm.length];
   }, [wasm]);
-  return <ItemTable items={items} totalSize={totalSize} />;
+  const [filter, setFilter] = useState("");
+  const [filteredSum, setFilteredSum] = useState<
+    | undefined
+    | {
+        itemsCount: number;
+        totalRetainedSize: number;
+        totalRetainedRatio: number;
+        totalShallowSize: number;
+      }
+  >(undefined);
+  return (
+    <div>
+      <FilterInput
+        onChange={useCallback((v: string) => {
+          setFilter(v);
+          if (!v) {
+            setFilteredSum(undefined);
+          }
+        }, [])}
+        className="mb-2 mt-10 max-w-[360px]"
+      />
+      {filteredSum && <FilteredResult {...filteredSum} />}
+      <ItemTable
+        items={items}
+        totalSize={totalSize}
+        filter={filter}
+        onFilterDone={useCallback(
+          (items: ItemModel[]) => {
+            const itemSet = new Set(items);
+            for (const item of items) {
+              let p = item.parent;
+              // avoid repeated calculation
+              while (p) {
+                if (itemSet.has(p)) {
+                  itemSet.delete(item);
+                  break;
+                }
+                p = p.parent;
+              }
+            }
+
+            let totalRetainedSize = 0;
+            for (const item of itemSet) {
+              totalRetainedSize += item.retainSize;
+            }
+            const totalRetainedRatio = totalRetainedSize / wasm.length;
+            const totalShallowSize = items.reduce(
+              (r, x) => r + x.shallowSize,
+              0,
+            );
+            setFilteredSum({
+              itemsCount: items.length,
+              totalRetainedSize: totalRetainedSize,
+              totalRetainedRatio: totalRetainedRatio,
+              totalShallowSize: totalShallowSize,
+            });
+          },
+          [wasm.length],
+        )}
+      />
+    </div>
+  );
 });
+
+function FilteredResult({
+  itemsCount,
+  totalShallowSize,
+  totalRetainedSize,
+  totalRetainedRatio,
+}: {
+  itemsCount: number;
+  totalRetainedSize: number;
+  totalRetainedRatio: number;
+  totalShallowSize: number;
+}) {
+  return (
+    <div className="my-6">
+      <div className="text-md font-bold text-gray-800 dark:text-gray-300">
+        Filtered Result
+      </div>
+      <Table className="w-60 text-gray-800 dark:text-gray-300">
+        <TableHeader>
+          <TableRow className="h-1 border-gray-600 p-0">
+            <TableHead className="p-1">Name</TableHead>
+            <TableHead className="p-1">Value</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow className="border-gray-600">
+            <TableCell className="p-1">Items Count</TableCell>
+            <TableCell className="p-1">{itemsCount}</TableCell>
+          </TableRow>
+          <TableRow className="border-gray-600">
+            <TableCell className="p-1">Shallow Bytes Sum</TableCell>
+            <TableCell className="p-1">{totalShallowSize}</TableCell>
+          </TableRow>
+          <TableRow className="border-gray-600">
+            <TableCell className="p-1">Retained Bytes Sum</TableCell>
+            <TableCell className="p-1">{totalRetainedSize}</TableCell>
+          </TableRow>
+          <TableRow className="border-gray-600">
+            <TableCell className="p-1">Retained Ratio Sum</TableCell>
+            <TableCell className="p-1">
+              {(totalRetainedRatio * 100).toFixed(2)}%
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
 
 const extractFoldState = (
   item: ItemModel,
@@ -266,6 +412,9 @@ function sort(items: ItemModel[], sortBy: SortBy): ItemModel[] {
   t.sort((a, b) => {
     if (sortBy === "retainSizeAsc") {
       return a.retainSize - b.retainSize;
+    }
+    if (sortBy === "shallowSizeAsc") {
+      return a.shallowSize - b.shallowSize;
     }
     return -a[sortBy] + b[sortBy];
   });

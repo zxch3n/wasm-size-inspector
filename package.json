@@ -29,6 +29,7 @@
     "sonner": "^1.4.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
+    "throttle-debounce": "^5.0.0",
     "twiggy-wasm-api": "file:./twiggy-wasm-api/pkg"
   },
   "devDependencies": {
@@ -46,6 +47,7 @@
     "@types/node": "^20.11.7",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
+    "@types/throttle-debounce": "^5.0.2",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
